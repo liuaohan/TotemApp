@@ -36,6 +36,10 @@ public class DeputyTable implements Serializable {
         this.size = size;
     }
 
+    public void add(Deputy deputy){
+        deputyTable.add(deputy);
+    }
+
     public void clear() {
         this.deputyTable.clear();
         this.size = 0;

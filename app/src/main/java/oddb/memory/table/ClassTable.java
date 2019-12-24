@@ -35,6 +35,10 @@ public class ClassTable implements Serializable {
         this.maxId = maxId;
     }
 
+    public void add(Class totemClass){
+        classTable.add(totemClass);
+    }
+
     public void clear() {
         classTable.clear();
         maxId = 0;

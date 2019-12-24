@@ -25,7 +25,7 @@ import oddb.memory.util.Byte2S;
 
 public class Management {
 
-    ManageInformation info;
+    public ManageInformation info;
 
     public Management() {
         info = new ManageInformation();
@@ -35,14 +35,14 @@ public class Management {
 
     //初始化缓冲区使用位图
     private void initBuffers() {
-        for (int i = 0; i < info.blockMaxLength; i++) {
+        for (int i = 0; i < info.bufferMaxLength; i++) {
             info.canUse[i] = true;
         }
     }
 
     //从磁盘加载块空间信息
     private void loadBlockSpace() {
-        File file = new File("/data/data/drz.oddb/memory/blockSpace");
+        File file = new File("/data/data/oddb.SqlParser/memory/blockSpace");
         if (file.exists()) {
             try {
                 FileInputStream input = new FileInputStream(file);
@@ -67,7 +67,7 @@ public class Management {
     public ClassTable loadClassTable() {
         ClassTable res = new ClassTable();
         oddb.memory.table.Class temp;
-        File classtab = new File("/data/data/drz.oddb/systemTable/class");
+        File classtab = new File("/data/data/oddb.SqlParser/systemTable/class");
         if (classtab.exists()) {
             try {
                 FileInputStream input = new FileInputStream(classtab);
@@ -93,16 +93,17 @@ public class Management {
 
     //存Class表
     public boolean saveClassTable(ClassTable tab) {
-        File classtab = new File("/data/data/drz.oddb/systemTable/class");
+        File classtab = new File("/data/data/oddb.SqlParser/systemTable/class");
         if (!classtab.exists()) {
             File path = classtab.getParentFile();
             System.out.println(path.getAbsolutePath());
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/systemTable/成功！");
+                if (path.mkdirs())
+                    System.out.println("创建路径/data/data/oddb.SqlParser/systemTable/成功！");
             }
             try {
                 if (classtab.createNewFile()) {
-                    System.out.println("创建路径/data/data/drz.oddb/systemTable/class！");
+                    System.out.println("创建路径/data/data/oddb.SqlParser/systemTable/class！");
                 }
                 System.out.println("创建文件成功！");
             } catch (IOException e) {
@@ -143,7 +144,7 @@ public class Management {
     public AttributeTable loadAttributeTable() {
         AttributeTable res = new AttributeTable();
         Attribute temp;
-        File classtab = new File("/data/data/drz.oddb/systemTable/attribute");
+        File classtab = new File("/data/data/oddb.SqlParser/systemTable/attribute");
         if (classtab.exists()) {
             try {
                 FileInputStream input = new FileInputStream(classtab);
@@ -171,16 +172,17 @@ public class Management {
 
     //存Attribute表
     public boolean saveAttributeTable(AttributeTable tab) {
-        File classtab = new File("/data/data/drz.oddb/systemTable/attribute");
+        File classtab = new File("/data/data/oddb.SqlParser/systemTable/attribute");
         if (!classtab.exists()) {
             File path = classtab.getParentFile();
             System.out.println(path.getAbsolutePath());
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/transaction/成功！");
+                if (path.mkdirs())
+                    System.out.println("创建路径/data/data/oddb.SqlParser/transaction/成功！");
             }
             try {
                 if (classtab.createNewFile())
-                    System.out.println("创建路径/data/data/drz.oddb/transaction/attributetable成功！");
+                    System.out.println("创建路径/data/data/oddb.SqlParser/transaction/attributetable成功！");
                 System.out.println("创建文件成功！");
             } catch (IOException e) {
                 System.out.println("创建文件失败！");
@@ -225,7 +227,7 @@ public class Management {
         Deputy temp;
 
 
-        File deputytab = new File("/data/data/drz.oddb/systemTable/deputy");
+        File deputytab = new File("/data/data/oddb.SqlParser/systemTable/deputy");
         if (deputytab.exists()) {
             try {
                 FileInputStream input = new FileInputStream(deputytab);
@@ -247,15 +249,16 @@ public class Management {
 
     //存Deputy表
     public boolean saveDeputyTable(DeputyTable tab) {
-        File deputytab = new File("/data/data/drz.oddb/systemTable/deputy");
+        File deputytab = new File("/data/data/oddb.SqlParser/systemTable/deputy");
         if (!deputytab.exists()) {
             File path = deputytab.getParentFile();
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/systemTable/成功！");
+                if (path.mkdirs())
+                    System.out.println("创建路径/data/data/oddb.SqlParser/systemTable/成功！");
             }
             try {
                 if (deputytab.createNewFile())
-                    System.out.println("创建文件/data/data/drz.oddb/systemTable/deputy！");
+                    System.out.println("创建文件/data/data/oddb.SqlParser/systemTable/deputy！");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -284,8 +287,8 @@ public class Management {
     public DeputyRuleTable loadDeputyRuleTable() {
         DeputyRuleTable res = new DeputyRuleTable();
         DeputyRule temp;
-        File deputytab = new File("/data/data/drz.oddb/systemTable/deputyrule");
-        if (!deputytab.exists()) {
+        File deputytab = new File("/data/data/oddb.SqlParser/systemTable/deputyrule");
+        if (deputytab.exists()) {
             try {
                 FileInputStream input = new FileInputStream(deputytab);
                 byte[] x = new byte[4];
@@ -309,15 +312,16 @@ public class Management {
 
     //存DeputyRule表
     public boolean saveDeputyRuleTable(DeputyRuleTable tab) {
-        File deputytab = new File("/data/data/drz.oddb/systemTable/deputyrule");
+        File deputytab = new File("/data/data/oddb.SqlParser/systemTable/deputyrule");
         if (!deputytab.exists()) {
             File path = deputytab.getParentFile();
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/systemTable/成功！");
+                if (path.mkdirs())
+                    System.out.println("创建路径/data/data/oddb.SqlParser/systemTable/成功！");
             }
             try {
                 if (deputytab.createNewFile())
-                    System.out.println("创建文件/data/data/drz.oddb/systemTable/deputyrule成功！");
+                    System.out.println("创建文件/data/data/oddb.SqlParser/systemTable/deputyrule成功！");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -346,7 +350,7 @@ public class Management {
     public SwitchingTable loadSwitchingTable() {
         SwitchingTable res = new SwitchingTable();
         Switching temp;
-        File switab = new File("/data/data/drz.oddb/systemTable/switching");
+        File switab = new File("/data/data/oddb.SqlParser/systemTable/switching");
         if (switab.exists()) {
             try {
                 FileInputStream input = new FileInputStream(switab);
@@ -373,15 +377,16 @@ public class Management {
 
     //存Switching表
     public boolean saveSwitchingTable(SwitchingTable tab) {
-        File switab = new File("/data/data/drz.oddb/systemTable/switching");
+        File switab = new File("/data/data/oddb.SqlParser/systemTable/switching");
         if (!switab.exists()) {
             File path = switab.getParentFile();
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/systemTable/成功！");
+                if (path.mkdirs())
+                    System.out.println("创建路径/data/data/oddb.SqlParser/systemTable/成功！");
             }
             try {
                 if (switab.createNewFile())
-                    System.out.println("创建文件/data/data/drz.oddb/systemTable/switchingtable成功！");
+                    System.out.println("创建文件/data/data/oddb.SqlParser/systemTable/switchingtable成功！");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -414,7 +419,7 @@ public class Management {
     public SwitchingRuleTable loadSwitchingRuleTable() {
         SwitchingRuleTable res = new SwitchingRuleTable();
         SwitchingRule temp;
-        File swirtab = new File("/data/data/drz.oddb/systemTable/switchingRule");
+        File swirtab = new File("/data/data/oddb.SqlParser/systemTable/switchingRule");
         if (swirtab.exists()) {
             try {
                 FileInputStream input = new FileInputStream(swirtab);
@@ -440,15 +445,16 @@ public class Management {
 
     //存Switching表
     public boolean saveSwitchingRuleTable(SwitchingRuleTable tab) {
-        File swirtab = new File("/data/data/drz.oddb/systemTable/switchingRule");
+        File swirtab = new File("/data/data/oddb.SqlParser/systemTable/switchingRule");
         if (!swirtab.exists()) {
             File path = swirtab.getParentFile();
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/systemTable/成功！");
+                if (path.mkdirs())
+                    System.out.println("创建路径/data/data/oddb.SqlParser/systemTable/成功！");
             }
             try {
                 if (swirtab.createNewFile())
-                    System.out.println("创建文件/data/data/drz.oddb/systemTable/switchingRule成功！");
+                    System.out.println("创建文件/data/data/oddb.SqlParser/systemTable/switchingRule成功！");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -477,8 +483,8 @@ public class Management {
     public BiPointerTable loadBiPointerTable() {
         BiPointerTable res = new BiPointerTable();
         BiPointer temp;
-        File bitab = new File("/data/data/drz.oddb/transaction/bipointertable");
-        if (!bitab.exists()) {
+        File bitab = new File("/data/data/oddb.SqlParser/systemTable/biPointer");
+        if (bitab.exists()) {
             try {
                 FileInputStream input = new FileInputStream(bitab);
                 byte[] buff = new byte[16];
@@ -500,15 +506,16 @@ public class Management {
 
     //存BiPointer表
     public boolean saveBiPointerTable(BiPointerTable tab) {
-        File bitab = new File("/data/data/drz.oddb/systemTable/biPointer");
+        File bitab = new File("/data/data/oddb.SqlParser/systemTable/biPointer");
         if (!bitab.exists()) {
             File path = bitab.getParentFile();
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/systemTable/成功！");
+                if (path.mkdirs())
+                    System.out.println("创建路径/data/data/oddb.SqlParser/systemTable/成功！");
             }
             try {
                 if (bitab.createNewFile())
-                    System.out.println("创建文件/data/data/drz.oddb/systemTable/biPointer！");
+                    System.out.println("创建文件/data/data/oddb.SqlParser/systemTable/biPointer！");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -535,8 +542,6 @@ public class Management {
     }
 
 
-
-
     //加载块
     private BufferPointer load(int block) {
         if (info.buffPointerList.size() == info.bufferMaxLength) {
@@ -559,7 +564,7 @@ public class Management {
 //                buffPointerList.remove(bufferMaxLength-1);
 //            }
         }
-        File file = new File("/data/data/drz.oddb/Memory/" + block);
+        File file = new File("/data/data/oddb.SqlParser/Memory/" + block);
         BufferPointer Free = null;
         if (file.exists()) {
             Free = new BufferPointer();
@@ -596,11 +601,11 @@ public class Management {
     private boolean save(BufferPointer blockpointer) {
         if (!blockpointer.isDirty)
             return true;
-        File file = new File("/data/data/drz.oddb/Memory/" + blockpointer.blockNum);
+        File file = new File("/data/data/oddb.SqlParser/Memory/" + blockpointer.blockNum);
         if (!file.exists()) {
             File path = file.getParentFile();
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/Memory/成功！");
+                if (path.mkdirs()) System.out.println("创建路径/data/data/oddb.SqlParser/Memory/成功！");
                 System.out.println("创建文件夹成功！");
             }
             try {

@@ -21,6 +21,13 @@ public class AttributeTable  implements Serializable {//属性
         this.attributeTable = attributeTable;
     }
 
+    public void addattr(int classid, String attrname, String attrtype,byte isdeputy){
+        int attributeid = maxId + 1;
+        maxId += 1;
+        Attribute attribute = new Attribute(classid,attributeid,attrname,attrtype,isdeputy);
+        attributeTable.add(attribute);
+    }
+
     public int getMaxId() {
         return maxId;
     }

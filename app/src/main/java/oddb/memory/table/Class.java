@@ -20,6 +20,7 @@ public class Class implements Serializable {
     public Class(int classId, String className, int attrNum, int classType) {
         this.classId = classId;
         this.className = className;
+        this.attrsNum = attrNum;
         this.classType = classType;
     }
 

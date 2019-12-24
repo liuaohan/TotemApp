@@ -328,8 +328,8 @@ public class Portal {
                                 tmp = tmp.replaceAll("\"", "");
                                 tuple_[i] = tmp;
                             } else {
-                                tuple_[i] = getCrossValue(selectStmt.attrs.get(i), objectTableItem1.tupleid);
-                                attrtype[i] = getCrossType(selectStmt.attrs.get(i), objectTableItem1.tupleid);
+                                tuple_[i] = getCrossValue(selectStmt.attrs.get(i), objectTableItem1.getObjectId());
+                                attrtype[i] = getCrossType(selectStmt.attrs.get(i), objectTableItem1.getObjectId());
 //去掉引号
                                 String tmp = (String) tuple_[i];
                                 tmp = tmp.replaceAll("\"", "");
@@ -338,12 +338,12 @@ public class Portal {
                             }
                         }
                         Tuple resulttuple = new Tuple(tuple_);
-                        tpl.addTuple(resulttuple);
+                        tupleList.addTuple(resulttuple);
                     }
                 }
             }
-            PrintSelectResult(tpl, attrname, attrid, attrtype);
-            return tpl;
+            PrintSelectResult(tupleList, attrname, attrid, attrtype);
+            return tupleList;
         }else {
 
             int[] posmark = new int[selectStmt.attrs.size()];
@@ -354,30 +354,30 @@ public class Portal {
             for (int i = 0; i < selectStmt.attrs.size(); i++) {
                 attrname[i] = selectStmt.attrs.get(i).attrname;
                 attrid[i] = i;
-                attrtype[i] = getAttrType(classid, selectStmt.attrs.get(i).attrname);
+                attrtype[i] = getAttrType(classId, selectStmt.attrs.get(i).attrname);
                 if (selectStmt.attrs.get(i).isCross == false)
-                    posmark[i] = getAttrPos(classid, selectStmt.attrs.get(i).attrname);
+                    posmark[i] = getAttrPos(classId, selectStmt.attrs.get(i).attrname);
                 else
                     posmark[i] = -1;
             }
 
             System.out.println("intercept");
             for (ObjectTableItem objectTableItem1 : objectTable.objectTable) {
-                if (objectTableItem1.classid == classid) {
-                    Tuple tuple = GetTuple(objectTableItem1.blockid, objectTableItem1.offset);
+                if (objectTableItem1.getClassId() == classId) {
+                    Tuple tuple = GetTuple(objectTableItem1.getBlockId(), objectTableItem1.getOffset());
                     //找到符合select条件的行
 
                     Object[] tuple_ = new Object[posmark.length];
                     for (int i = 0; i < posmark.length; i++) {
                         if (posmark[i] >= 0) {
-                            tuple_[i] = tuple.tuple[posmark[i]];
+                            tuple_[i] = tuple.getTuple()[posmark[i]];
                             //去掉引号
                             String tmp = (String) tuple_[i];
                             tmp = tmp.replaceAll("\"", "");
                             tuple_[i] = tmp;
                         } else {
-                            tuple_[i] = getCrossValue(selectStmt.attrs.get(i), objectTableItem1.tupleid);
-                            attrtype[i] = getCrossType(selectStmt.attrs.get(i), objectTableItem1.tupleid);
+                            tuple_[i] = getCrossValue(selectStmt.attrs.get(i), objectTableItem1.getObjectId());
+                            attrtype[i] = getCrossType(selectStmt.attrs.get(i), objectTableItem1.getObjectId());
 //去掉引号
                             String tmp = (String) tuple_[i];
                             tmp = tmp.replaceAll("\"", "");
@@ -386,13 +386,13 @@ public class Portal {
                         }
                     }
                     Tuple resulttuple = new Tuple(tuple_);
-                    tpl.addTuple(resulttuple);
+                    tupleList.addTuple(resulttuple);
                 }
 
             }
 
-            PrintSelectResult(tpl, attrname, attrid, attrtype);
-            return tpl;
+            PrintSelectResult(tupleList, attrname, attrid, attrtype);
+            return tupleList;
 
         }
 
@@ -401,7 +401,198 @@ public class Portal {
 
     public void update(UpdateStmt updateStmt) {
         String classname = updateStmt.classname;
-        int classid = getClassId(classname);
+
+        int classid = 0;
+
+        for (Class totemClass : classTable.getClassTable()) {
+            if (totemClass.getClassName().equals(classname)) {
+                classid = totemClass.getClassId();
+                break;
+            }
+        }
+        HashMap<String, Integer> attMap = getRuleAtt(updateStmt.whereclause, classid);
+
+        OandB ob2 = new OandB();
+        Iterator it1 = objectTable.objectTable.iterator();
+        while (it1.hasNext()) {
+            ObjectTableItem item3 = (ObjectTableItem) it1.next();
+            if (item3.getClassId() == classid) {
+                Tuple tuple = GetTuple(item3.getBlockId(), item3.getOffset());
+                HashMap<String, String> params = new HashMap<>();
+                for (String str : attMap.keySet()) {
+                    params.put(str, tuple.getTuple()[attMap.get(str)].toString());
+                }
+                Check boolCheck = new Check();
+                if (boolCheck.isEnable(updateStmt.whereclause, params)) {
+                    UpdatebyID(ob2, classid, item3.getObjectId(), updateStmt);
+
+                }
+            }
+        }
+        for (ObjectTableItem obj : ob2.objects) {
+            objectTable.objectTable.remove(obj);
+        }
+        for (ObjectTableItem obj : ob2.objects2) {
+            objectTable.objectTable.add(obj);
+        }
+        for (BiPointer bip : ob2.biPointers) {
+            biPointerTable.getBiPointerTable().remove(bip);
+        }
+
+
+    }
+
+    private void UpdatebyID(OandB ob2, int classid, int tupleid, UpdateStmt us) {
+
+
+        for (Iterator it1 = objectTable.objectTable.iterator(); it1.hasNext(); ) {
+            ObjectTableItem item = (ObjectTableItem) it1.next();
+            if (item.getObjectId() == tupleid && item.getClassId() == classid) {
+                Tuple tuple = GetTuple(item.getBlockId(), item.getOffset());
+                Tuple tupleOld = GetTuple(item.getBlockId(), item.getOffset());
+
+                //更新元组值
+
+                for (Attribute attributeTableItem1 : attributeTable.getAttributeTable()) {
+                    for (int i = 0; i < us.attrs.size(); i++) {
+                        if (us.attrs.get(i).equals(attributeTableItem1.getAttrName()) && attributeTableItem1.getClassId() == classid)
+                            tuple.getTuple()[attributeTableItem1.getAttrId()] = us.values.get(i);
+                    }
+                }
+                UpateTuple(tuple, item.getBlockId(), item.getOffset());
+//                Tuple tuple1 = GetTuple(item.blockid,item.offset);
+//                UpateTuple(tuple1,item.blockid,item.offset);
+
+
+                for (Deputy deputy : deputyTable.getDeputyTable()) {
+
+                    if (classid == deputy.getOriginClassId()) {
+
+                        String deputyrule = null;
+
+                        for (DeputyRule deputyRule : deputyRuleTable.getDeputyRuleTable()) {
+                            if (deputyRule.getDeputyRuleId() == deputyRule.getDeputyRuleId())
+                                deputyrule = deputyRule.getRule();
+                        }
+
+                        HashMap<String, Integer> attMap = getRuleAtt(deputyrule, classid);
+
+                        HashMap<String, String> params = new HashMap<>();
+                        HashMap<String, String> paramsOld = new HashMap<>();
+                        for (String str : attMap.keySet()) {
+                            params.put(str, tuple.getTuple()[attMap.get(str)].toString());
+                        }
+                        for (String str : attMap.keySet()) {
+                            paramsOld.put(str, tupleOld.getTuple()[attMap.get(str)].toString());
+                        }
+                        Check boolCheck = new Check();
+                        if (boolCheck.isEnable(deputyrule, params) && boolCheck.isEnable(deputyrule, paramsOld)) {
+                            UpdateStmt us2 = new UpdateStmt();
+                            for (BiPointer item1 : biPointerTable.getBiPointerTable()) {
+                                if (item1.getOriginObjectId() == tupleid && item1.getOriginClassId() == classid) {
+                                    for (Attribute item4 : attributeTable.getAttributeTable()) {
+                                        if (item4.isDeputy() != 0) {
+                                            String swirule = null;
+                                            for (SwitchingRule switchingRule : switchingRuleTable.getSwitchingRuleTable()) {
+                                                if (switchingRule.getSwitchRuleId() == item4.isDeputy())
+                                                    swirule = switchingRule.getRule();
+                                            }
+
+                                            HashMap<String, Integer> swiattMap = getRuleAtt(swirule, classid);
+
+                                            for (String name : swiattMap.keySet()) {
+                                                System.out.println("不对劲" + tuple.getTuple()[swiattMap.get(name)].toString());
+                                                swirule = swirule.replaceAll(name, tuple.getTuple()[swiattMap.get(name)].toString());
+                                            }
+
+                                            if (swirule.contains("(") || swirule.contains("{") || swirule.contains("[")) {
+                                                int re = calculate(swirule);
+                                                us2.values.add(String.valueOf(re));
+                                            } else {
+                                                us2.values.add(swirule);
+                                            }
+
+                                            us2.attrs.add(item4.getAttrName());
+                                        } else {
+                                            if (item4.getAttrType().equals("int"))
+                                                us2.values.add("0");
+                                            else if (item4.getAttrType().equals("char")) {
+                                                us2.values.add(" ");
+                                            }
+                                            us2.attrs.add(item4.getAttrName());
+                                        }
+                                    }
+                                    UpdatebyID(ob2, item1.getDeputyClassId(), item1.getDeputyObjectId(), us2);
+                                }
+                            }
+                        } else if (!boolCheck.isEnable(deputyrule, params) && boolCheck.isEnable(deputyrule, paramsOld)) {
+
+                            for (BiPointer item1 : biPointerTable.getBiPointerTable()) {
+                                if (item1.getOriginObjectId() == tupleid) {
+                                    OandB ob = new OandB(DeletebyID(item1.getDeputyObjectId()));
+                                    for (ObjectTableItem obje : ob.objects) {
+                                        ob2.objects.add(obje);
+                                    }
+                                    for (BiPointer bip : ob.biPointers) {
+                                        ob2.biPointers.add(bip);
+                                    }
+                                }
+                            }
+
+                        } else if (boolCheck.isEnable(deputyrule, params) && !boolCheck.isEnable(deputyrule, paramsOld)) {
+                            objectTable.maxTupleId++;
+                            int Dtupid = objectTable.maxTupleId;
+
+
+                            for (Class item4 : classTable.getClassTable()) {
+                                if (item4.getClassId() == deputy.getDeputyClassId()) {
+                                    Tuple t = new Tuple();
+                                    t.setTupleHeader(item4.getAttrsNum());
+                                    t.setTuple(new Object[t.getTupleHeader()]);
+
+                                    for (Attribute attributeTableItem1 : attributeTable.getAttributeTable()) {
+                                        if (attributeTableItem1.getClassId() == item4.getClassId() && attributeTableItem1.isDeputy() != 0) {
+                                            String swirule = null;
+                                            for (SwitchingRule switchingTableItem1 : switchingRuleTable.getSwitchingRuleTable()) {
+                                                if (switchingTableItem1.getSwitchRuleId() == attributeTableItem1.isDeputy())
+                                                    swirule = switchingTableItem1.getRule();
+                                            }
+
+                                            HashMap<String, Integer> swiattMap = getRuleAtt(swirule, classid);
+
+                                            for (String name : swiattMap.keySet()) {
+                                                swirule = swirule.replaceAll(name, tuple.getTuple()[swiattMap.get(name)].toString());
+                                            }
+                                            if (swirule.contains("(") || swirule.contains("{") || swirule.contains("[")) {
+                                                int re = calculate(swirule);
+                                                t.getTuple()[attributeTableItem1.getAttrId()] = re;
+                                            } else {
+                                                t.getTuple()[attributeTableItem1.getAttrId()] = swirule;
+                                            }
+                                        } else if (attributeTableItem1.getClassId() == item4.getClassId()) {
+                                            if (attributeTableItem1.getAttrType().equals("int"))
+                                                t.getTuple()[attributeTableItem1.getAttrId()] = "0";
+                                            else if (attributeTableItem1.getAttrType().equals("char")) {
+                                                t.getTuple()[attributeTableItem1.getAttrId()] = " ";
+                                            }
+                                        }
+                                    }
+                                    int[] result = InsertTuple(t);
+                                    ob2.objects2.add(new ObjectTableItem(deputy.getDeputyClassId(), Dtupid, result[0], result[1]));
+
+                                    //bi
+                                    BiPointer biPointer = new BiPointer(classid, tupleid, deputy.getDeputyClassId(), Dtupid);
+                                    biPointerTable.getBiPointerTable().add(biPointer);
+                                    //biPointerTable.setBiPointerTable(biPointerTable.getBiPointerTable(new BiPointer(classid, tupleid, deputy.getDeputyClassId(), Dtupid));
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+            }
+        }
 
 
     }
@@ -691,6 +882,41 @@ public class Portal {
         return result;
     }
 
+
+    public String getCrossType(attrcontext attrc, int objectid) {
+        int deputyobjectid = -1;
+        int deputyclassid = -1;
+        int originclassid = -1;
+        for (int i = 0; i < attrc.crossclass.size() - 1; i++) {
+            originclassid = getClassId(attrc.crossclass.get(i));
+            deputyclassid = getClassId(attrc.crossclass.get(i + 1));
+            deputyobjectid = getBiObjectid(originclassid, deputyclassid, objectid);
+        }
+
+        return getAttrType(deputyclassid, attrc.attrname);
+    }
+
+    public Object getCrossValue(attrcontext attrc, int objectid) {
+        int deputyobjectid = -1;
+        int deputyclassid = -1;
+        int originclassid = -1;
+        List<Integer> biids;
+        for (int i = 0; i < attrc.crossclass.size() - 1; i++) {
+            originclassid = getClassId(attrc.crossclass.get(i));
+            deputyclassid = getClassId(attrc.crossclass.get(i + 1));
+            deputyobjectid = getBiObjectid(originclassid, deputyclassid, objectid);
+        }
+
+        int attrid = getAttrPos(deputyclassid, attrc.attrname);
+        Tuple tuple = null;
+        for (ObjectTableItem ob : objectTable.objectTable) {
+            if (ob.getObjectId() == deputyobjectid && ob.getClassId() == deputyclassid)
+                tuple = GetTuple(ob.getBlockId(), ob.getOffset());
+        }
+        Object result = tuple.getTuple()[attrid];
+        return result;
+    }
+
     //获取到源类元组
     public List<Tuplesp> getOriginTuple(int classid, String whereclause) {
         List<Tuplesp> res = new ArrayList();
@@ -916,10 +1142,10 @@ public class Portal {
             this.biPointers = oandB.biPointers;
         }
 
-        public OandB(List<ObjectTableItem> o, List<ObjectTableItem> o2, List<BiPointer> b) {
-            this.objects = o;
-            this.objects2 = o2;
-            this.biPointers = b;
+        public OandB(List<ObjectTableItem> objects, List<ObjectTableItem> objects2, List<BiPointer> biPointers) {
+            this.objects = objects;
+            this.objects2 = objects2;
+            this.biPointers = biPointers;
         }
     }
 

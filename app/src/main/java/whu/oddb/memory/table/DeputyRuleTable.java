@@ -25,6 +25,10 @@ public class DeputyRuleTable implements Serializable {
         this.deputyRuleTable = deputyRuleTable;
     }
 
+    public void add(DeputyRule deputyRule){
+        deputyRuleTable.add(deputyRule);
+    }
+
     public void clear(){
         deputyRuleTable.clear();
         maxId = 0;

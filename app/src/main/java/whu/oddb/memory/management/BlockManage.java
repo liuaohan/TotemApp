@@ -39,7 +39,7 @@ public class BlockManage implements Serializable {
 //                buffPointerList.remove(bufferMaxLength-1);
 //            }
         }
-        File file = new File("/data/data/drz.oddb/Memory/" + block);
+        File file = new File("/data/data/oddb.SqlParser/Memory/" + block);
         BufferPointer Free = null;
         if (file.exists()) {
             Free = new BufferPointer();
@@ -76,11 +76,11 @@ public class BlockManage implements Serializable {
     private boolean save(BufferPointer blockpointer) {
         if (!blockpointer.isDirty)
             return true;
-        File file = new File("/data/data/drz.oddb/Memory/" + blockpointer.blockNum);
+        File file = new File("/data/data/oddb.SqlParser/Memory/" + blockpointer.blockNum);
         if (!file.exists()) {
             File path = file.getParentFile();
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/Memory/成功！");
+                if (path.mkdirs()) System.out.println("创建路径/data/data/oddb.SqlParser/Memory/成功！");
                 System.out.println("创建文件夹成功！");
             }
             try {
@@ -180,7 +180,7 @@ public class BlockManage implements Serializable {
 
     //从磁盘加载块空间信息
     private void loadBlockSpace() {
-        File file = new File("/data/data/drz.oddb/Memory/blockspace");
+        File file = new File("/data/data/oddb.SqlParser/Memory/blockspace");
         if (file.exists()) {
             try {
                 FileInputStream input = new FileInputStream(file);
@@ -204,11 +204,11 @@ public class BlockManage implements Serializable {
 
     //存入块空间信息到磁盘
     private boolean saveBlockSpace() {
-        File file = new File("/data/data/drz.oddb/Memory/blockspace");
+        File file = new File("/data/data/oddb.SqlParser/Memory/blockspace");
         if (!file.exists()) {
             File path = file.getParentFile();
             if (!path.exists()) {
-                if (path.mkdirs()) System.out.println("创建路径/data/data/drz.oddb/Memory/成功！");
+                if (path.mkdirs()) System.out.println("创建路径/data/data/oddb.SqlParser/Memory/成功！");
             }
             try {
                 if (file.createNewFile()) System.out.println("创建成功");

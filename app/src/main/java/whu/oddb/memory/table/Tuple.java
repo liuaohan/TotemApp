@@ -3,20 +3,20 @@ package whu.oddb.memory.table;
 import java.io.Serializable;
 
 public class Tuple implements Serializable {
-    private int tupleSize;
+    private int tupleHeader;
     private Object[] tuple;
 
     public Tuple(Object[] values) {
         tuple = values.clone();
-        tupleSize = values.length;
+        tupleHeader = values.length;
     }
 
     public int getTupleHeader() {
-        return tupleSize;
+        return tupleHeader;
     }
 
     public void setTupleHeader(int tupleHeader) {
-        this.tupleSize = tupleHeader;
+        this.tupleHeader = tupleHeader;
     }
 
     public Object[] getTuple() {

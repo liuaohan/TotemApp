@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.io.Serializable;
 
 import whu.oddb.R;
+import whu.oddb.memory.table.SwitchingRuleTable;
 import whu.oddb.memory.table.SwitchingTable;
 
 public class ShowSwi extends AppCompatActivity implements Serializable {
@@ -30,46 +31,51 @@ public class ShowSwi extends AppCompatActivity implements Serializable {
 
         Intent intent = getIntent();
         Bundle bundle0 = intent.getExtras();
-        showSwiTab((SwitchingTable) bundle0.getSerializable("SwitchingTable"));
+        showSwiTab((SwitchingRuleTable) bundle0.getSerializable("SwitchingRuleTable"));
 
     }
 
-    private void showSwiTab(SwitchingTable switchingT) {
-        int tabCol = 4;
-        int tabH = switchingT.getSwitchingTable().size();
-        String stemp1, stemp2, stemp3, stemp4;
+    private void showSwiTab(SwitchingRuleTable switchingT) {
+        int tabCol = 2;
+        int tabH = switchingT == null || switchingT.getSwitchingRuleTable() == null ? 0 : switchingT.getSwitchingRuleTable().size();
+        //String stemp1, stemp2, stemp3, stemp4;
+        String s1, s2;
 
         show_tab = findViewById(R.id.rst_tab);
 
         for (int i = 0; i <= tabH; i++) {
             TableRow tableRow = new TableRow(this);
             if (i == 0) {
-                stemp1 = "    originClassId    ";
-                stemp2 = "    deputyClassId    ";
-                stemp3 = "    originAttrId     ";
-                stemp4 = "    deputyAttrId     ";
+                /*stemp1 = "originClassId";
+                stemp2 = "deputyClassId";
+                stemp3 = "originAttrId";
+                stemp4 = "deputyAttrId";*/
+                s1 = "switchRuleId";
+                s2 = "rule";
             } else {
-                stemp1 = String.valueOf(switchingT.getSwitchingTable().get(i - 1).getOriginClassId());
+                /*stemp1 = String.valueOf(switchingT.getSwitchingTable().get(i - 1).getOriginClassId());
                 stemp2 = String.valueOf(switchingT.getSwitchingTable().get(i - 1).getDeputyClassId());
                 stemp3 = String.valueOf(switchingT.getSwitchingTable().get(i - 1).getOriginAttrId());
-                stemp4 = String.valueOf(switchingT.getSwitchingTable().get(i - 1).getDeputyAttrId());
+                stemp4 = String.valueOf(switchingT.getSwitchingTable().get(i - 1).getDeputyAttrId());*/
+                s1 = String.valueOf(switchingT.getSwitchingRuleTable().get(i - 1).getSwitchRuleId());
+                s2 = String.valueOf(switchingT.getSwitchingRuleTable().get(i - 1).getRule());
             }
             for (int j = 0; j < tabCol; j++) {
                 TextView tv = new TextView(this);
                 switch (j) {
                     case 0:
-                        tv.setText(stemp1);
+                        tv.setText(s1);
                         break;
                     case 1:
-                        tv.setText(stemp2);
+                        tv.setText(s2);
                         break;
-                    case 2:
+                    /*case 2:
                         tv.setText(stemp3);
                         break;
                     case 3:
                         tv.setText(stemp4);
                         break;
-
+*/
                 }
                 tv.setGravity(Gravity.CENTER);
                 tv.setBackgroundResource(R.drawable.tab_bg);

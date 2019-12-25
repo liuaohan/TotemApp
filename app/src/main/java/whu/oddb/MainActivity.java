@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
 
+import whu.oddb.execute.Portal;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText editText;
 
     private TextView text_view;
-    //TransAction trans = new TransAction(this);
+    Portal portal = new Portal(this);
     Intent music = null;
 
 
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //onStop();
                 //trans.Test();
-                //trans.query(editText.getText().toString());
+                portal.query(editText.getText().toString());
                 System.out.println("???");
             }
         });
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //onStop();
-                //trans.PrintTab();
+                portal.PrintTab();
             }
         });
 

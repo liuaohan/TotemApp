@@ -52,7 +52,7 @@ public class ShowDep extends AppCompatActivity implements Serializable {
 
             } else {
                 oj1 = deputyt.getDeputyTable().get(i - 1).getOriginClassId()    ;
-                oj2 = deputyt.getDeputyTable().get(i - 1).getDeputyRuleId();
+                oj2 = deputyt.getDeputyTable().get(i - 1).getDeputyClassId();
                 oj3 = deputyt.getDeputyTable().get(i - 1).getDeputyRuleId();
                 stemp1 = oj1.toString();
                 stemp2 = oj2.toString();

@@ -41,6 +41,7 @@ public class TupleManage implements Serializable {
         for (int i = 0; i < res.getTupleHeader() * info.attrMaxLength; i++) {
             temp[i] = info.memBuff.get(s.bufferId * info.blockMaxLength + start + 4 + i);
         }
+        //String ss= new String(temp);
         for (int i = 0; i < res.getTupleHeader(); i++) {
             String str = Byte2S.byte2str(temp, i * info.attrMaxLength, info.attrMaxLength);
             res.getTuple()[i] = str;
@@ -73,11 +74,11 @@ public class TupleManage implements Serializable {
             ;
             byte[] x = new byte[4];
             for (int i = 0; i < 4; i++) {
-                x[i] = info.memBuff.get(p.bufferId * info.maxBlockNum + i);
+                x[i] = info.memBuff.get(p.bufferId * info.blockMaxLength + i);
             }
             int spacestart = Byte2S.bytes2Int(x, 0, 4);
             for (int i = 0; i < 4; i++) {
-                x[i] = info.memBuff.get(p.bufferId * info.maxBlockNum + 4 + i);
+                x[i] = info.memBuff.get(p.bufferId * info.blockMaxLength + 4 + i);
             }
             int spaceend = Byte2S.bytes2Int(x, 0, 4);
             ret[0] = k;
@@ -89,23 +90,23 @@ public class TupleManage implements Serializable {
                 info.cleanList.remove(p.bufferId);
             byte[] hea = Byte2S.int2Bytes(t.getTupleHeader(), 4);
             for (int i = 0; i < 4; i++) {
-                info.memBuff.put(p.bufferId * info.maxBlockNum + spaceend + i, hea[i]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + spaceend + i, hea[i]);
             }
             byte[] str;
             for (int i = 0; i < t.getTupleHeader(); i++) {
                 str = Byte2S.str2Bytes(t.getTuple()[i].toString(), info.attrMaxLength);
                 for (int j = 0; j < info.attrMaxLength; j++) {
-                    info.memBuff.put(p.bufferId * info.maxBlockNum + spaceend + 4 + i * info.attrMaxLength + j, str[j]);
+                    info.memBuff.put(p.bufferId * info.blockMaxLength + spaceend + 4 + i * info.attrMaxLength + j, str[j]);
                 }
             }
             byte[] sp = Byte2S.int2Bytes(spacestart, 4);
             for (int i = 0; i < 4; i++) {
-                info.memBuff.put(p.bufferId * info.maxBlockNum + i, sp[i]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + i, sp[i]);
             }
             sp = Byte2S.int2Bytes(spaceend, 4);
             for (int i = 0; i < 4; i++) {
-                info.memBuff.put(p.bufferId * info.maxBlockNum + 4 + i, sp[i]);
-                info.memBuff.put(p.bufferId * info.maxBlockNum + spacestart - 4 + i, sp[i]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + 4 + i, sp[i]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + spacestart - 4 + i, sp[i]);
             }
             updateBufferPointerSequence(p);
             return ret;
@@ -115,29 +116,29 @@ public class TupleManage implements Serializable {
             ret[0] = info.maxBlockNum;
             ret[1] = 8;
             int spacetart = 12;
-            int spaceend = info.maxBlockNum - tuplelength;
+            int spaceend = info.blockMaxLength - tuplelength;
             p.isDirty = true;
             if (info.cleanList.contains(p.bufferId))
                 info.cleanList.remove(p.bufferId);
             byte[] hea = Byte2S.int2Bytes(t.getTupleHeader(), 4);
             for (int i = 0; i < 4; i++) {
-                info.memBuff.put(p.bufferId * info.maxBlockNum + spaceend + i, hea[i]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + spaceend + i, hea[i]);
             }
             byte[] str;
             for (int i = 0; i < t.getTupleHeader(); i++) {
                 str = Byte2S.str2Bytes(t.getTuple()[i].toString(), info.attrMaxLength);
                 for (int j = 0; j < info.attrMaxLength; j++) {
-                    info.memBuff.put(p.bufferId * info.maxBlockNum + spaceend + 4 + i * info.attrMaxLength + j, str[j]);
+                    info.memBuff.put(p.bufferId * info.blockMaxLength + spaceend + 4 + i * info.attrMaxLength + j, str[j]);
                 }
             }
             byte[] sp = Byte2S.int2Bytes(spacetart, 4);
             for (int i = 0; i < 4; i++) {
-                info.memBuff.put(p.bufferId * info.maxBlockNum + i, sp[i]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + i, sp[i]);
             }
             sp = Byte2S.int2Bytes(spaceend, 4);
             for (int i = 0; i < 4; i++) {
-                info.memBuff.put(p.bufferId * info.maxBlockNum + 4 + i, sp[i]);
-                info.memBuff.put(p.bufferId * info.maxBlockNum + spacetart - 4 + i, sp[i]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + 4 + i, sp[i]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + spacetart - 4 + i, sp[i]);
             }
             updateBufferPointerSequence(p);
             return ret;
@@ -163,18 +164,18 @@ public class TupleManage implements Serializable {
         }
         byte[] link = new byte[4];
         for (int i = 0; i < 4; i++) {
-            link[i] = info.memBuff.get(p.bufferId * info.maxBlockNum + offset + i);
+            link[i] = info.memBuff.get(p.bufferId * info.blockMaxLength + offset + i);
         }
         int sta = Byte2S.bytes2Int(link, 0, 4);
         byte[] header = Byte2S.int2Bytes(tuple.getTupleHeader(), 4);
         for (int i = 0; i < 4; i++) {
-            info.memBuff.put(p.bufferId * info.maxBlockNum + sta + i, header[i]);
+            info.memBuff.put(p.bufferId * info.blockMaxLength + sta + i, header[i]);
         }
         byte[] temp;
         for (int i = 0; i < tuple.getTupleHeader(); i++) {
             temp = Byte2S.str2Bytes(tuple.getTuple()[i].toString(), info.attrMaxLength);
             for (int j = 0; j < info.attrMaxLength; j++) {
-                info.memBuff.put(p.bufferId * info.maxBlockNum + sta + 4 + i * info.attrMaxLength + j, temp[j]);
+                info.memBuff.put(p.bufferId * info.blockMaxLength + sta + 4 + i * info.attrMaxLength + j, temp[j]);
             }
         }
         updateBufferPointerSequence(p);

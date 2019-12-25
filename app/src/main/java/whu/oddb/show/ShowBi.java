@@ -39,7 +39,7 @@ public class ShowBi extends AppCompatActivity implements Serializable {
         //ListView tableList = findViewById(R.id.tablelist);
         //tableList.setAdapter(adapter);
         int tabCol = 4;
-        int tabH = biPointerT.getBiPointerTable().size();
+        int tabH = biPointerT==null||biPointerT.getBiPointerTable()==null?0:biPointerT.getBiPointerTable().size();
         Object oj1, oj2, oj3, oj4;
         String stemp1, stemp2, stemp3, stemp4;
 

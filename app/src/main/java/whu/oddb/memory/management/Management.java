@@ -1,4 +1,4 @@
-package oddb.memory.management;
+package whu.oddb.memory.management;
 
 
 import java.io.BufferedOutputStream;
@@ -8,20 +8,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import oddb.memory.table.Attribute;
-import oddb.memory.table.AttributeTable;
-import oddb.memory.table.BiPointer;
-import oddb.memory.table.BiPointerTable;
-import oddb.memory.table.ClassTable;
-import oddb.memory.table.Deputy;
-import oddb.memory.table.DeputyRule;
-import oddb.memory.table.DeputyRuleTable;
-import oddb.memory.table.DeputyTable;
-import oddb.memory.table.Switching;
-import oddb.memory.table.SwitchingRule;
-import oddb.memory.table.SwitchingRuleTable;
-import oddb.memory.table.SwitchingTable;
-import oddb.memory.util.Byte2S;
+import whu.oddb.memory.table.Attribute;
+import whu.oddb.memory.table.AttributeTable;
+import whu.oddb.memory.table.BiPointer;
+import whu.oddb.memory.table.BiPointerTable;
+import whu.oddb.memory.table.ClassTable;
+import whu.oddb.memory.table.Deputy;
+import whu.oddb.memory.table.DeputyRule;
+import whu.oddb.memory.table.DeputyRuleTable;
+import whu.oddb.memory.table.DeputyTable;
+import whu.oddb.memory.table.Switching;
+import whu.oddb.memory.table.SwitchingRule;
+import whu.oddb.memory.table.SwitchingRuleTable;
+import whu.oddb.memory.table.SwitchingTable;
+import whu.oddb.memory.util.Byte2S;
 
 public class Management {
 
@@ -66,7 +66,7 @@ public class Management {
     //加载Class表
     public ClassTable loadClassTable() {
         ClassTable res = new ClassTable();
-        oddb.memory.table.Class temp;
+        whu.oddb.memory.table.Class temp;
         File classtab = new File("/data/data/oddb.SqlParser/systemTable/class");
         if (classtab.exists()) {
             try {
@@ -77,7 +77,7 @@ public class Management {
                 }
                 byte[] buff = new byte[12 + info.attrMaxLength];
                 while (input.read(buff, 0, 12 + info.attrMaxLength) != -1) {
-                    temp = new oddb.memory.table.Class();
+                    temp = new whu.oddb.memory.table.Class();
                     temp.setClassName(Byte2S.byte2str(buff, 0, info.attrMaxLength));
                     temp.setClassId(Byte2S.bytes2Int(buff, info.attrMaxLength, 4));
                     temp.setAttrsNum(Byte2S.bytes2Int(buff, info.attrMaxLength + 4, 4));

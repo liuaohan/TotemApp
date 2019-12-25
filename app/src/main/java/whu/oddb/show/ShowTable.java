@@ -75,9 +75,11 @@ public class ShowTable extends AppCompatActivity implements Serializable {
                     }
                     case 5:{
                         printDepR(deputyrulet);
+                        break;
                     }
                     case 6:{
                         printAtt(attributeTable);
+                        break;
                     }
                 }
             }
